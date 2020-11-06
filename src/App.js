@@ -51,9 +51,15 @@ const App = (props) => {
 	let getFriends = async (idUser = userInfo.id) => {
 		const response = await fetchJsonp(`https://api.vk.com/method/friends.get?user_id=${idUser}&count=${friendsCount}&fields=can_write_private_message,photo_100,bdate,sex&access_token=${token}&v=5.124.jsonp`, {
 			method: "GET",
-			typeData: "JSONP",
+			type: "JSONP",
 		});
-
+		/*const response = await bridge.send("VKWebAppCallAPIMethod",
+			{"method": "friends.get",
+				"params":
+					{"fields": "can_write_private_message,photo_100,bdate,sex",
+						"user_id": idUser,
+						"count": friendsCount,
+						"v": "5.124", "access_token": token}});*/
 		if(response.ok) {
 			const json = await response.json();
 			if(!json.error) {
