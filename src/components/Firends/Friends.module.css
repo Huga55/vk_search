@@ -1,0 +1,7 @@
+.friends {
+    max-height: 50vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    overflow: scroll;
+}

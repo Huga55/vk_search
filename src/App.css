@@ -1,0 +1,20 @@
+.App {
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+.section-entry {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-entry {
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.button-entry:hover {
+    opacity: 0.7;
+}
