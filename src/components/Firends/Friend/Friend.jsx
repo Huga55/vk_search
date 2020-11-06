@@ -1,5 +1,6 @@
 import React from "react";
 import css from "./Friend.module.css";
+import {getAgFromDate} from "../Friends";
 
 const Friend = (props) => {
     return(
@@ -9,7 +10,8 @@ const Friend = (props) => {
             </div>
             <div className={css.right}>
                 <div>{props.info.first_name} {props.info.last_name}</div>
-                <div>{props.info.bdate}</div>
+                <div>Возраст: {getAgFromDate(props.info.bdate)}</div>
+                <div>Пол: {props.info.sex === 2? "Муж" : "Жен"}</div>
             </div>
         </div>
     );

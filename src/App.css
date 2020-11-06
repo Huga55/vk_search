@@ -1,6 +1,5 @@
 .App {
-    max-height: 100vh;
-    overflow: hidden;
+
 }
 
 .section-entry {
@@ -8,6 +7,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+}
+
+.main-icon {
+    width: 200px;
 }
 
 .button-entry {
@@ -17,4 +21,19 @@
 
 .button-entry:hover {
     opacity: 0.7;
+}
+
+.section-wait {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #EDEDEE;
+    transition: 1s;
+}
+
+.spinner-text {
+    font-size: 20px;
 }

@@ -6,11 +6,14 @@ import Checkbox from "@vkontakte/vkui/dist/components/Checkbox/Checkbox";
 const Search = (props) => {
 
     let setNewOption = (e, value = e.currentTarget.value.toLowerCase()) => {
-        props.setPropsSearch({name: e.currentTarget.name, value: value});
+        props.setPropsSearch({name: e.currentTarget.name, value: value.trim()});
     }
 
     return(
-        <form>
+        <form className={css.search}>
+            <div className={css.subtitle}>
+                Поиск по друзьям и их друзьям
+            </div>
             <div>
                 <Input type="text" name="lastname" onChange={setNewOption} placeholder="Фамилия" className={css.input}/>
             </div>

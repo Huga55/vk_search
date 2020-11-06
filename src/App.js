@@ -5,19 +5,22 @@ import '@vkontakte/vkui/dist/vkui.css';
 import User from "./components/User/User";
 import Friends from "./components/Firends/Friends";
 import Search from "./components/Search/Search";
-import {Group, Panel} from "@vkontakte/vkui";
-import PanelHeader from "@vkontakte/vkui/dist/components/PanelHeader/PanelHeader";
+import {Div, Panel} from "@vkontakte/vkui";
 import {Button} from "@vkontakte/vkui/dist/es6";
+import iconSearch from "./img/search.jpg";
+import spinner from "./img/spnner.gif";
+import fetchJsonp from "fetch-jsonp";
 
 
 const App = (props) => {
+	const [necesseryCount, setNecesseryCount] = useState(10000);//для разработчика, исходное количество друзей
 	const [token, setToken] = useState(null);// токен для запросов на API
 	const [userInfo, setUserInfo] = useState(null);// информация текущего пользователя
 	const [friendsList, setFriendsList] = useState([]);//информация о друзьях пользователя и друзей друзей
-	const [friendsCount, setFriendsCount] = useState(10);//остаток друзей для получения от API
+	const [friendsCount, setFriendsCount] = useState(necesseryCount);//остаток друзей для получения от API
 	const [currentFriend, setCurrentFriend] = useState(-1);//текущий друг для получения его друзей
-	const [activeScreen, setActiveScreen] = useState("main");//id активного экрана приложения
-	const [propSearch, setPropSearch] = useState({name: "lastname", value: ""});
+	const [activeScreen, setActiveScreen] = useState("entry");//id активного экрана приложения
+	const [propSearch, setPropSearch] = useState({name: "lastname", value: ""});//измененный параметр поиска (динамический)
 
 	useEffect(() => {
 		async function getUserInfo() {
@@ -36,26 +39,30 @@ const App = (props) => {
 	}, [token, userInfo]);
 
 	useEffect(() => {
-		if(friendsCount < 10 && friendsCount > 0) {
+		if(friendsCount < necesseryCount && friendsCount > 0) {
 			if(friendsList[currentFriend]["can_access_closed"]) {
 				getFriends(friendsList[currentFriend].id);
 			}else {
 				setCurrentFriend(currentFriend + 1);
 			}
-		}else {
-			console.log(friendsList);
 		}
 	}, [currentFriend]);
 
 	let getFriends = async (idUser = userInfo.id) => {
-		const response = await fetch(`http://localhost:8010/proxy/method/friends.get?user_id=${idUser}&count=${friendsCount}&fields=can_write_private_message,photo_100,bdate,sex&access_token=${token}&v=5.124`, {
+		const response = await fetchJsonp(`https://api.vk.com/method/friends.get?user_id=${idUser}&count=${friendsCount}&fields=can_write_private_message,photo_100,bdate,sex&access_token=${token}&v=5.124.jsonp`, {
 			method: "GET",
+			typeData: "JSONP",
 		});
+
 		if(response.ok) {
 			const json = await response.json();
-			setFriendsList([...friendsList, ...json.response.items]);
-			setFriendsCount(friendsCount - json.response.count);
-			setCurrentFriend(currentFriend + 1);
+			if(!json.error) {
+				setFriendsList([...friendsList, ...json.response.items]);
+				setFriendsCount(friendsCount - json.response.count);
+				setCurrentFriend(currentFriend + 1);
+			}else {
+				getFriends(friendsList[currentFriend].id);//если vk api выдал ошибку о превышении количества запросов
+			}
 		}
 	}
 
@@ -65,16 +72,25 @@ const App = (props) => {
 		<View activePanel={activeScreen} className="App">
 			<Panel id="entry">
 				<div className="section-entry">
-					<Button className="button-entry" mode="primary" onClick={() => setActiveScreen("main")}>Начать работу</Button>
+					<img alt="search" src={iconSearch} className="main-icon"/>
+					<Button className="button-entry" mode="primary" onClick={() => setActiveScreen("main")}>Начать
+						работу</Button>
 				</div>
 			</Panel>
 			<Panel id="main">
-				<Group >
-					<PanelHeader>Поиск пользователей</PanelHeader>
-					<User {...userInfo}/>
-					<Search setPropsSearch={setPropSearch} />
-					<Friends friends={friendsList} propSearch={propSearch}/>
-				</Group>
+
+				{friendsList.length === necesseryCount ?
+					<Div>
+						<User {...userInfo}/>
+						<Search setPropsSearch={setPropSearch}/>
+						<Friends friends={friendsList} propSearch={propSearch}/>
+					</Div> :
+					<div className="section-wait">
+						Друзей найдено: {friendsList.length}
+						<img alt="spinner" src={spinner} className="spinner"/>
+						<span className="spinner-text">Ищем всех всех ваших друзей..</span>
+					</div>
+				}
 			</Panel>
 		</View>
 	);

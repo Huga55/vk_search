@@ -1,7 +1,11 @@
 .friends {
-    max-height: 50vh;
+    max-height: 100vh;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     overflow: scroll;
+}
+
+.button_add {
+    margin: 20px auto;
 }
